@@ -1,0 +1,17 @@
+version: '3'
+ 
+services:
+  jenkins:
+    container_name: 'PE03jenkins-container'
+    privileged: true
+    build: .
+    ports:
+      - '8070:8070'
+      - '40000:40000'
+    volumes:
+      - ./jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+ 
+volumes:
+  myjenkins:
