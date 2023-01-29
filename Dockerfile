@@ -1,22 +1,24 @@
-FROM python:3.8
+FROM jenkins/jenkins:latest
+ 
+USER root
+#referenced: https://docs.docker.com/engine/install/debian/ and matched up to Dockerfile format
+RUN apt-get update -qq \
+    && apt-get install -qqy  \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+WORKDIR /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
-#Set working directory to app
-WORKDIR /app
+RUN echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-#Copy over files to app directory
-COPY requirements.txt /app/requirements.txt
+RUN apt-get update  -qq \
+    && apt-get install docker-ce docker-ce-cli containerd.io -y
+ 
+RUN usermod -aG docker jenkins
 
-#Install requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
 
-#Copy rest of files over to working directory
-COPY . /app
 
-# run application in the container
-# Any Docker image must have an ENTRYPOINT or CMD declaration for a container to start.
-ENTRYPOINT [ "python" ]
-
-# appends the list of parameters to the EntryPoint parameter 
-# to perform the command that runs the application.
-# ex. works like running phython app.py
-CMD [ "app.py" ]
