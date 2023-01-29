@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, session
 import requests
+import os
 
 import pandas as pd
 import numpy as np
@@ -11,8 +12,7 @@ app = Flask(__name__, template_folder='template')
 @app.route('/')
 def home():
           return render_template('index.html')
-
-       
+      
 @app.route('/', methods = ['POST'])
 def getvalue():
     taxUser = request.form['tax']
@@ -23,4 +23,5 @@ def getvalue():
     return render_template('index.html', res = res)    
 
 if __name__ =='__main__':
-    app.run(debug=True)
+      port = int(os.environ.get('PORT', 3000))
+      app.run(debug=True, host='0.0.0.0', port=port)
